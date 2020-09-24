@@ -370,7 +370,14 @@ export default class NeoVis {
 								arrows: {
 									to: {enabled: this._config.arrows || false} // FIXME: handle default value
 								},
-								color: 'red',
+								color: {
+									color:'#eb4034',
+									highlight:'#eb938d',
+									hover: '#290e0c',
+									inherit: false,
+									opacity:1.0
+								},
+								dashes: true,
 								length: 200
 							},
 							layout: {
@@ -423,6 +430,7 @@ export default class NeoVis {
 						//          return item;
 						//     }
 						// );
+						alert("it's read!!")
 						this._network = new vis.Network(container, this._data, options);
 					}
 					this._consoleLog('completed');
