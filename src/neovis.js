@@ -370,6 +370,7 @@ export default class NeoVis {
 								arrows: {
 									to: {enabled: this._config.arrows || false} // FIXME: handle default value
 								},
+								color: 'red',
 								length: 200
 							},
 							layout: {
