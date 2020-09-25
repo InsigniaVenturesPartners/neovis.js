@@ -6,6 +6,7 @@ import 'vis-network/dist/vis-network.min.css';
 import { defaults } from './defaults';
 import { EventController, CompletionEvent, ClickEdgeEvent, ClickNodeEvent, ErrorEvent } from './events';
 
+export const SUB_TYPE = 'sub_type'
 export const NEOVIS_DEFAULT_CONFIG = Symbol();
 
 export default class NeoVis {
@@ -221,36 +222,59 @@ export default class NeoVis {
 	 * @returns {{}}
 	 */
 	buildEdgeVisObject(r) {
-		const nodeTypeConfig = this._config && this._config.relationships &&
-			(this._config.relationships[r.type] || this._config.relationships[NEOVIS_DEFAULT_CONFIG]);
-		let weightKey = nodeTypeConfig && nodeTypeConfig.thickness,
-			captionKey = nodeTypeConfig && nodeTypeConfig.caption;
-
 		let edge = {};
 		edge.id = r.identity.toInt();
 		edge.from = r.start.toInt();
 		edge.to = r.end.toInt();
 
-		// hover tooltip. show all properties in the format <strong>key:</strong> value
+		
+		let sub_type = null // style differently if edge has sub_type and a style is defined for this sub_type in the relationships config
 		edge.title = '';
+
+		// hover tooltip. show all properties in the format <strong>key:</strong> value
 		for (let key in r.properties) {
+			if (key === SUB_TYPE) {
+				sub_type = r.properties[key]
+			}
 			if (r.properties.hasOwnProperty(key)) {
 				edge['title'] += this.propertyToString(key, r.properties[key]);
 			}
 		}
 
+		const nodeTypeConfig = this._config && this._config.relationships &&
+			((this._config.relationships[r.type] && this._config.relationships[r.type][sub_type]) || this._config.relationships[r.type] || this._config.relationships[NEOVIS_DEFAULT_CONFIG]);
+		let weightKey = nodeTypeConfig && nodeTypeConfig.thickness,
+			captionKey = nodeTypeConfig && nodeTypeConfig.caption,
+			colorKey = nodeTypeConfig && nodeTypeConfig.color,
+			widthKey = nodeTypeConfig && nodeTypeConfig.width,
+			dashesKey = nodeTypeConfig && nodeTypeConfig.dashes;
+
 		// set relationship thickness
-		if (weightKey && typeof weightKey === 'string') {
-			edge.value = r.properties[weightKey];
-		} else if (weightKey && typeof weightKey === 'number') {
-			edge.value = weightKey;
-		} else {
-			edge.value = 1.0;
+		if (typeof widthKey === 'undefined') {
+			if (weightKey && typeof weightKey === 'string') {
+				edge.value = r.properties[weightKey];
+			} else if (weightKey && typeof weightKey === 'number') {
+				edge.value = weightKey;
+			} else {
+				edge.value = 1.0;
+			}
+		}
+
+		if (widthKey && typeof widthKey === 'number') {
+			edge.width = widthKey
+		}
+
+		// set if dashes style
+		if (dashesKey && typeof dashesKey !== 'undefined') {
+			edge.dashes = dashesKey
+		}
+
+		// set color
+		if (colorKey && typeof colorKey === 'object') {
+			edge.color = colorKey
 		}
 
 		// set caption
-
-
 		if (typeof captionKey === 'boolean') {
 			if (!captionKey) {
 				edge.label = '';
@@ -377,7 +401,7 @@ export default class NeoVis {
 									inherit: false,
 									opacity:1.0
 								},
-								dashes: true,
+								dashes: false,
 								length: 200
 							},
 							layout: {
@@ -430,7 +454,6 @@ export default class NeoVis {
 						//          return item;
 						//     }
 						// );
-						alert("it's read!!")
 						this._network = new vis.Network(container, this._data, options);
 					}
 					this._consoleLog('completed');
