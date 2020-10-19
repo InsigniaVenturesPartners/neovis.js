@@ -213,6 +213,29 @@ export default class NeoVis {
 			node.font = font;
 		}
 
+		let styles = labelConfig && labelConfig.styles || null
+
+		if (styles) {
+			for (let index = 0; index < styles.length; index++) {
+				const style = styles[index];
+				if ( (style.key === 'any') || style.values.includes(neo4jNode.properties[style.key]) ) {
+					// apply style to node
+					if (style.color) {
+						node.color = style.color
+					}
+
+					if (style.size) {
+						node.size = style.size
+						node.value = undefined
+					}
+
+					if (style.shape) {
+						node.shape = style.shape
+					}
+				}
+			}
+		}
+
 		return node;
 	}
 
