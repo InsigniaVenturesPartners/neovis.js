@@ -425,7 +425,7 @@ export default class NeoVis {
 									opacity:1.0
 								},
 								dashes: false,
-								length: undefined
+								length: 200
 							},
 							layout: {
 								improvedLayout: false,
