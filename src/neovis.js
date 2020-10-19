@@ -215,32 +215,21 @@ export default class NeoVis {
 
 		let styles = labelConfig && labelConfig.styles || null
 
-		console.log('styles', styles)
-
 		if (styles) {
-			console.log(1)
 			for (let index = 0; index < styles.length; index++) {
 				const style = styles[index];
-				console.log(2)
-				console.log('style.key', style.key)
-				console.log('neo4jNode.properties', neo4jNode.properties)
-				console.log('neo4jNode.properties[style.key]', neo4jNode.properties[style.key])
-				console.log('style.values', style.values)
 				if ( (style.key === 'any') || style.values.includes(neo4jNode.properties[style.key]) ) {
 					// apply style to node
 					if (style.color) {
-						console.log('style.color', style.color)
 						node.color = style.color
 					}
 
 					if (style.size) {
-						console.log('style.size', style.size)
 						node.size = style.size
 						node.value = undefined
 					}
 
 					if (style.shape) {
-						console.log('style.shape', style.shape)
 						node.shape = style.shape
 					}
 				}
